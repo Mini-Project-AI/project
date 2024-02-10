@@ -1,21 +1,12 @@
-interface EndPoints {
-  test: string;
-  // Add other endpoints as needed
-}
+import { Configuration, EndPoints, StorageToken } from "./types/config.types";
 
-interface Configuration {
-  [key: string]: string;
-}
-
-interface StorageToken {
-  storageTokenKeyName: string;
-  storageRefreshTokenKeyName: string;
-  storageFoodTruck: string;
-}
 const BASED_URL : string = process.env.BASED_URL ?? "https://flask-app-h2bx.onrender.com"
 const endPoints: EndPoints = {
-  // -- auth endPoints
-  test: '/health-care', // -- log in based url
+  healthCareEndPoint       : '/health-care'  , // -- test server endPoint
+  loginEndPoint            : '/login'        , // -- log in user endPoint
+  registerEndPoint         : '/register'     , // -- register user endPoint
+  bestMoveEndPoint         : '/ai/best_move' , // -- get best move for computer endPoint
+  bestMoveHeuristicEndPoint: '/ai/heuristic' , // -- get best move heuristic function endPoint
 };
 
 function getEndPoints(): Configuration {
@@ -28,16 +19,16 @@ function getEndPoints(): Configuration {
 
 const tokenType: string = 'Bearer';
 
-const storageToken: StorageToken = {
-  storageTokenKeyName: 'accessToken',
-  storageRefreshTokenKeyName: 'refreshToken',
-  storageFoodTruck: 'foodTruck',
+const storageToken : StorageToken = {
+  storageTokenKeyName        : 'accessToken' ,
+  storageRefreshTokenKeyName : 'refreshToken',
+  storageFoodTruck           : 'foodTruck'   ,
 };
 
 const apiConfig: Configuration = {
   ...getEndPoints(),
-  tokenType,
   ...storageToken,
+  tokenType,
 };
 
 export default apiConfig;

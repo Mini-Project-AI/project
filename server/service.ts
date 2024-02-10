@@ -75,12 +75,95 @@ export default class JwtService {
   // ============== web services methods list ============== //
 
   /**
-   * web service for login as```login as Food trucker```
-   * @name ```loginFoodTrucker```
-   * @param {loginFoodTruckerPayloadT} payload
+ * Web service for testing the server's health status.
+ * @name testHealthCare
+ * @returns Promise<ApiResponse>
    */
-  async testWebService(): Promise<ApiResponse> {
-    return (await axios.get(this.jwtConfig.test)).data
+  async testHealthCare(): Promise<ApiResponse> {
+    return (await axios.get(this.jwtConfig.healthCareEndPoint)).data
   }
+
+  /**
+ * Web service for user login.
+ * @name loginUser
+ * @param email - User's email
+ * @param password - User's password
+ * @returns Promise<ApiResponse>
+ */
+async loginUser(email: string, password: string): Promise<ApiResponse> {
+  return (await axios.post(this.jwtConfig.loginEndPoint, { email, password })).data;
+}
+
+/**
+ * Web service for user registration.
+ * @name registerUser
+ * @param email - User's email
+ * @param password - User's password
+ * @param first_name - User's first name
+ * @param last_name - User's last name
+ * @param age - User's age
+ * @returns Promise<ApiResponse>
+ */
+async registerUser(
+  email: string,
+  password: string,
+  first_name: string,
+  last_name: string,
+  age: number
+): Promise<ApiResponse> {
+  return (
+    await axios.post(this.jwtConfig.registerEndPoint, {
+      email,
+      password,
+      first_name,
+      last_name,
+      age
+    })
+  ).data;
+}
+
+/**
+ * Web service for obtaining the best move in an AI scenario.
+ * @name getBestMove
+ * @param board - Current state of the board
+ * @param algorithm - Flag indicating the algorithm to be used
+ * @param time - Flag indicating whether time should be considered
+ * @returns Promise<ApiResponse>
+ */
+async getBestMove(
+  board: number[],
+  algorithm: boolean,
+  time: boolean
+): Promise<ApiResponse> {
+  return (
+    await axios.post(this.jwtConfig.bestMoveEndPoint, {
+      board,
+      algorithm,
+      time
+    })
+  ).data;
+}
+
+/**
+ * Web service for obtaining the best move in an AI scenario.
+ * @name getBestMoveHeuristic
+ * @param board - Current state of the board
+ * @param algorithm - Flag indicating the algorithm to be used
+ * @param time - Flag indicating whether time should be considered
+ * @returns Promise<ApiResponse>
+ */
+async getBestMoveHeuristic(
+  board: number[],
+  algorithm: boolean,
+  time: boolean
+): Promise<ApiResponse> {
+  return (
+    await axios.post(this.jwtConfig.bestMoveHeuristicEndPoint, {
+      board,
+      algorithm,
+      time
+    })
+  ).data;
+}
 
 }
