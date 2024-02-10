@@ -1,5 +1,5 @@
 import {useState} from "react"
-import { StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View} from '@/components/Themed';
@@ -10,7 +10,7 @@ export default function TabOneScreen() {
   const [message, setMessage]= useState("")
   async function handleTest() {
     try {
-      const response = await webService().testWebService()
+      const response = await webService().testHealthCare()
       if (response.status) {
         setMessage(response.message)
       }
