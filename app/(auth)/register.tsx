@@ -1,79 +1,50 @@
 // RegisterScreen.tsx
 import React from 'react';
-import { View, TextInput, TouchableOpacity , Alert, Text } from 'react-native';
-import { Formik } from 'formik';
-import * as yup from 'yup';
+import { View, Image, TouchableOpacity , Alert, Platform, StyleSheet } from 'react-native';
+import { Title } from '@/components/text/Title';
+import RegisterForm from '@/components/forms/RegisterForm';
 
-const RegisterScreen: React.FC = () => {
-  const handleRegister = (values: { email: string; password: string; firstName: string; lastName: string; age: string }) => {
+const RegisterScreen: React.FC<{ navigation : any}> = ({ navigation }) => {
+  const isWeb = Platform.OS === "web"
+
+  const handleRegister = (values: { email: string; password: string; firstName: string; lastName: string; age: number }) => {
     // Handle register logic here
     Alert.alert('Register', `Email: ${values.email}, Password: ${values.password}, First Name: ${values.firstName}, Last Name: ${values.lastName}, Age: ${values.age}`);
   };
 
-  const registerSchema = yup.object().shape({
-    email: yup.string().email('Invalid email').required('Email is required'),
-    password: yup.string().required('Password is required'),
-    firstName: yup.string().required('First Name is required'),
-    lastName: yup.string().required('Last Name is required'),
-    age: yup.number().required('Age is required').positive('Age must be positive').integer('Age must be an integer'),
-  });
+  const handleNavigationLogin = () => {
+    // Navigate to the registration screen
+    navigation.navigate('Login');
+  };
 
   return (
-    <View>
-      <Formik
-        initialValues={{ email: '', password: '', firstName: '', lastName: '', age: '' }}
-        onSubmit={(values) => handleRegister(values)}
-        validationSchema={registerSchema}
-      >
-        {({ handleChange, handleBlur, values, errors }) => (
-          <View>
-            <TextInput
-              placeholder="Email"
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
-              value={values.email}
-            />
-            {errors.email && <Text>{errors.email}</Text>}
-            <TextInput
-              placeholder="Password"
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              value={values.password}
-              secureTextEntry
-            />
-            {errors.password && <Text>{errors.password}</Text>}
-            <TextInput
-              placeholder="First Name"
-              onChangeText={handleChange('firstName')}
-              onBlur={handleBlur('firstName')}
-              value={values.firstName}
-            />
-            {errors.firstName && <Text>{errors.firstName}</Text>}
-            <TextInput
-              placeholder="Last Name"
-              onChangeText={handleChange('lastName')}
-              onBlur={handleBlur('lastName')}
-              value={values.lastName}
-            />
-            {errors.lastName && <Text>{errors.lastName}</Text>}
-            <TextInput
-              placeholder="Age"
-              onChangeText={handleChange('age')}
-              onBlur={handleBlur('age')}
-              value={values.age}
-              keyboardType="numeric"
-            />
-            {errors.age && <Text>{errors.age}</Text>}
-            <TouchableOpacity onPress={()=> handleRegister(values)}>
-                <Text>
-                Register
-                </Text>
-                </TouchableOpacity>
-          </View>
-        )}
-      </Formik>
+    <View style={{...styles.container, marginVertical: isWeb ? "0%": "10%"}}>
+      <Image source={require('../../assets/images/logo.jpg')} style={styles.logo} />
+      <View style={styles.form}>
+      <RegisterForm onSubmit={handleRegister} />
+      </View>
+      <TouchableOpacity onPress={handleNavigationLogin}>
+        <Title style={{fontSize: isWeb ? 30: 12, marginTop: 20}} >Don't have an account? Click here to sign up!</Title>
+      </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width:"100%",
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    borderRadius: 25
+  },
+  form: {
+    marginHorizontal:"20%"
+  }
+});
 
 export default RegisterScreen;
