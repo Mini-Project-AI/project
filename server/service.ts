@@ -58,7 +58,7 @@ export default class JwtService {
    * @returns Access token if available, otherwise null.
    */
   getAccessToken() {
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (typeof window?.localStorage !== 'undefined') {
       return localStorage.getItem(this.jwtConfig.storageTokenKeyName);
     } else {
       return this.getAccessTokenAsync();
@@ -89,7 +89,7 @@ export default class JwtService {
    */
   async setAccessToken(token: string) {
     try {
-      if (typeof window !== 'undefined' && window.localStorage) {
+      if (typeof window?.localStorage !== 'undefined') {
         localStorage.setItem(this.jwtConfig.storageTokenKeyName, token);
       } else {
         await AsyncStorage.setItem(this.jwtConfig.storageTokenKeyName, JSON.stringify(token));
@@ -104,7 +104,7 @@ export default class JwtService {
    */
   async removeAccessToken() {
     try {
-      if (typeof window !== 'undefined' && window.localStorage) {
+      if (typeof window?.localStorage !== 'undefined') {
         localStorage.removeItem(this.jwtConfig.storageTokenKeyName);
       } else {
         await AsyncStorage.removeItem(this.jwtConfig.storageTokenKeyName);
