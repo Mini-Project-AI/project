@@ -1,46 +1,37 @@
-// ========================== Web service controller for API ========================== //
-
-//--- import creator HTTP request
 import axios, { AxiosResponse } from 'axios';
-//--- import based constance variables for APi handler
 import jwtDefaultConfig from './config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/**
- * @see [handleApiError](./types/response.type.ts)
- * @see [handleApiResponse](./types/authPayload.ts)
- * @description scale the responses types return as uniform ones
- */
 import { ApiResponse } from './types/response.type';
 
 /**
- * JWT Service class for handling JWT authentication and API requests.
+ * Service class for managing JWT authentication.
  */
 export default class JwtService {
-  // ** jwtConfig <= Will be used by this service
+  /**
+   * Configuration for JWT service.
+   */
   jwtConfig = { ...jwtDefaultConfig };
-
-  // ** For Refreshing Token
-  isAlreadyFetchingAccessToken = false; //--- getting token access finished status
-
-  // ** For Refreshing Token
+  /**
+   * Flag to indicate if there is already a request fetching access token.
+   */
+  isAlreadyFetchingAccessToken = false;
+  /**
+   * Override configuration for JWT service.
+   */
   jwtOverrideConfig: any;
 
   /**
-   * Constructs a new JwtService instance.
-   * @param {Object} jwtOverrideConfig - Custom JWT configuration to override default settings.
+   * Constructor for JwtService class.
+   * @param jwtOverrideConfig Override configuration for JWT service.
    */
   constructor(jwtOverrideConfig: any) {
-    this.jwtConfig = { ...this.jwtConfig }; //--- getting based info
+    this.jwtConfig = { ...this.jwtConfig };
     this.jwtOverrideConfig = jwtOverrideConfig;
 
-    //================= Request Interceptor === configuration request before sending HTTP request to the server
-    /**
-     * @see [axios_interceptors] (https://axios-http.com/docs/interceptors)
-     */
     axios.interceptors.request.use(
       config => {
-        // ** Get token from localStorage
-        const accessToken = this.getAccessToken()
+        const accessToken = this.getAccessToken();
         if (accessToken) {
           config.headers.Authorization = `${this.jwtConfig.tokenType} ${accessToken}`;
         }
@@ -48,61 +39,107 @@ export default class JwtService {
         return config;
       },
       error => {
-        Promise.reject(error);
-      },
+        return Promise.reject(error);
+      }
     );
 
-    // ** Add request/response interceptor
     axios.interceptors.response.use(
       async function (response) {
-        // Any status code that lies within the range of 2xx causes this function to trigger
         return response as unknown as AxiosResponse<ApiResponse>;
       },
       async function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
         return error as unknown as AxiosResponse<ApiResponse>;
-      },
+      }
     );
   }
 
-    /**
-   * Method to retrieve the access token from local storage.
-   */
-    getAccessToken() {
-      return localStorage.getItem(this.jwtConfig.storageTokenKeyName);
-    }
-
-  // ============== web services methods list ============== //
-
   /**
- * Web service for testing the server's health status.
- * @name testHealthCare
- * @returns Promise<ApiResponse>
+   * Get access token from local storage.
+   * @returns Access token if available, otherwise null.
    */
-  async testHealthCare(): Promise<ApiResponse> {
-    return (await axios.get(this.jwtConfig.healthCareEndPoint)).data
+  getAccessToken() {
+    if (typeof window?.localStorage !== 'undefined') {
+      return localStorage.getItem(this.jwtConfig.storageTokenKeyName);
+    } else {
+      return this.getAccessTokenAsync();
+    }
   }
 
   /**
- * Web service for user login.
- * @name loginUser
- * @param email - User's email
- * @param password - User's password
- * @returns Promise<ApiResponse>
+   * Asynchronously get access token from AsyncStorage.
+   * @returns Access token if available, otherwise null.
+   */
+  async getAccessTokenAsync() {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      if (accessToken) {
+        const parsedToken = JSON.parse(accessToken);
+        return parsedToken;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error retrieving access token:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Set access token in local storage or AsyncStorage.
+   * @param token Access token to be set.
+   */
+  async setAccessToken(token: string) {
+    try {
+      if (typeof window?.localStorage !== 'undefined') {
+        localStorage.setItem(this.jwtConfig.storageTokenKeyName, token);
+      } else {
+        await AsyncStorage.setItem(this.jwtConfig.storageTokenKeyName, JSON.stringify(token));
+      }
+    } catch (error) {
+      console.error('Error setting access token:', error);
+    }
+  }
+
+  /**
+   * Remove access token from local storage or AsyncStorage.
+   */
+  async removeAccessToken() {
+    try {
+      if (typeof window?.localStorage !== 'undefined') {
+        localStorage.removeItem(this.jwtConfig.storageTokenKeyName);
+      } else {
+        await AsyncStorage.removeItem(this.jwtConfig.storageTokenKeyName);
+      }
+    } catch (error) {
+      console.error('Error removing access token:', error);
+    }
+  }
+
+  /**
+ * Makes a request to the health care endpoint to test the health of the service.
+ * @returns A Promise that resolves to the ApiResponse data from the health care endpoint.
+ */
+async testHealthCare(): Promise<ApiResponse> {
+  return (await axios.get(this.jwtConfig.healthCareEndPoint)).data;
+}
+
+/**
+ * Logs in a user with the provided email and password.
+ * @param email The email of the user.
+ * @param password The password of the user.
+ * @returns A Promise that resolves to the ApiResponse data from the login request.
  */
 async loginUser(email: string, password: string): Promise<ApiResponse> {
   return (await axios.post(this.jwtConfig.loginEndPoint, { email, password })).data;
 }
 
 /**
- * Web service for user registration.
- * @name registerUser
- * @param email - User's email
- * @param password - User's password
- * @param first_name - User's first name
- * @param last_name - User's last name
- * @param age - User's age
- * @returns Promise<ApiResponse>
+ * Registers a new user with the provided details.
+ * @param email The email of the user.
+ * @param password The password of the user.
+ * @param first_name The first name of the user.
+ * @param last_name The last name of the user.
+ * @param age The age of the user.
+ * @returns A Promise that resolves to the ApiResponse data from the registration request.
  */
 async registerUser(
   email: string,
@@ -123,18 +160,13 @@ async registerUser(
 }
 
 /**
- * Web service for obtaining the best move in an AI scenario.
- * @name getBestMove
- * @param board - Current state of the board
- * @param algorithm - Flag indicating the algorithm to be used
- * @param time - Flag indicating whether time should be considered
- * @returns Promise<ApiResponse>
+ * Gets the best move for the given board state using the specified algorithm and time constraints.
+ * @param board The current board state.
+ * @param algorithm A boolean indicating whether to use a specific algorithm.
+ * @param time A boolean indicating whether to consider time constraints.
+ * @returns A Promise that resolves to the ApiResponse data containing the best move.
  */
-async getBestMove(
-  board: number[],
-  algorithm: boolean,
-  time: boolean
-): Promise<ApiResponse> {
+async getBestMove(board: number[], algorithm: boolean, time: boolean): Promise<ApiResponse> {
   return (
     await axios.post(this.jwtConfig.bestMoveEndPoint, {
       board,
@@ -145,12 +177,11 @@ async getBestMove(
 }
 
 /**
- * Web service for obtaining the best move in an AI scenario.
- * @name getBestMoveHeuristic
- * @param board - Current state of the board
- * @param algorithm - Flag indicating the algorithm to be used
- * @param time - Flag indicating whether time should be considered
- * @returns Promise<ApiResponse>
+ * Gets the best move heuristic for the given board state using the specified algorithm and time constraints.
+ * @param board The current board state.
+ * @param algorithm A boolean indicating whether to use a specific algorithm.
+ * @param time A boolean indicating whether to consider time constraints.
+ * @returns A Promise that resolves to the ApiResponse data containing the best move heuristic.
  */
 async getBestMoveHeuristic(
   board: number[],
