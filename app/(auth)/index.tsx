@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { Title } from '@/components/text/Title';
+import { indexStyles } from '@/styles/welcome.styles';
 
 
 type AuthScreenProps = {
@@ -18,15 +19,15 @@ const AuthScreen = ({ navigation }: AuthScreenProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Title style={styles.title}>tic tac toe</Title>
-      <Image source={require('../../assets/images/logo.jpg')} style={styles.logo} />
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
-          <Text style={styles.buttonText}>Login</Text>
+    <View style={indexStyles.container}>
+      <Title style={indexStyles.title}>tic tac toe</Title>
+      <Image source={require('../../assets/images/logo.jpg')} style={indexStyles.logo} />
+      <View style={indexStyles.buttonsContainer}>
+        <TouchableOpacity style={indexStyles.button} onPress={handleLoginPress}>
+          <Text style={indexStyles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleRegisterPress}>
-          <Text style={styles.buttonText}>Register</Text>
+        <TouchableOpacity style={indexStyles.button} onPress={handleRegisterPress}>
+          <Text style={indexStyles.buttonText}>Register</Text>
         </TouchableOpacity>
       </View>
 
@@ -34,41 +35,5 @@ const AuthScreen = ({ navigation }: AuthScreenProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  buttonsContainer: {
-    alignItems: 'center',
-    width: '100%',
-  },
-  title: {
-    marginTop: 50,
-    fontSize: 60,
-    alignSelf: 'center'
-
-  },
-  logo: {
-    width: 300,
-    height: 300,
-    marginBottom: 50,
-    borderRadius: 25
-  },
-  button: {
-    width: '80%',
-    backgroundColor: 'blue',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-});
 
 export default AuthScreen;

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Image, TouchableOpacity, Text } from 'react-native';
+import { View, Image, TouchableOpacity, Text } from 'react-native';
 import { Title } from '@/components/text/Title';
 import { useNavigation } from '@react-navigation/native';
+import { indexStyles } from '@/styles/welcome.styles';
 
 interface GamesType {
     name :string;
@@ -24,13 +25,13 @@ const ApplicationScreen = () => {
     navigation.navigate(_pathName)
   }
   return (
-    <View style={styles.container}>
-      <Title style={styles.title}>Applications</Title>
-      <Image source={require('../../assets/images/tictactoe.png')} style={styles.logo} />
-      <View style={styles.buttonsContainer}>
+    <View style={indexStyles.container}>
+      <Title style={indexStyles.title}>Applications</Title>
+      <Image source={require('../../assets/images/tictactoe.png')} style={indexStyles.logo} />
+      <View style={indexStyles.buttonsContainer}>
         {Games.map(game => {
             return (
-                <TouchableOpacity  onPress={()=> handleNavigate(game.navigator.pathname as never)} key={game.id} style={styles.button} > <Text>{game.label}</Text> </TouchableOpacity>
+                <TouchableOpacity  onPress={()=> handleNavigate(game.navigator.pathname as never)} key={game.id} style={indexStyles.button} > <Text>{game.label}</Text> </TouchableOpacity>
             )
         })}
 
@@ -39,42 +40,5 @@ const ApplicationScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  buttonsContainer: {
-    alignItems: 'center',
-    width: '100%',
-  },
-  title: {
-    marginTop: 50,
-    fontSize: 60,
-    alignSelf: 'center'
-
-  },
-  logo: {
-    width: 300,
-    height: 300,
-    marginBottom: 50,
-    borderRadius: 25
-  },
-  button: {
-    width: '80%',
-    backgroundColor: 'blue',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-});
 
 export default ApplicationScreen;
