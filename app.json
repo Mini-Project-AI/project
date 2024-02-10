@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "tic_tac_toe",
-    "slug": "tic_tac_toe",
+    "slug": "tic-tac-toe",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -42,8 +42,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "eba4ccfb-efa4-4c1c-8094-e42c1ef9473b"
+        "projectId": "4a8cb611-31ff-4f0a-9457-43405192fea4"
       }
-    }
+    },
+    "owner": "ai_horizon"
   }
 }
